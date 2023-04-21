@@ -10,7 +10,7 @@ const options = {
   per_page: '40',
 };
 
-export default async function fetchCards(searchImg, currentPage) {
+export default async function fetchCards(searchImg, currentPage, perPage) {
   const {
     baseUrl,
     key,
@@ -23,7 +23,7 @@ export default async function fetchCards(searchImg, currentPage) {
   } = options;
 
   const response = await axios.get(
-    `${baseUrl}?key=${key}&q=${searchImg}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${currentPage}&per_page=${per_page}`
+    `${baseUrl}?key=${key}&q=${searchImg}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${currentPage}&per_page=${perPage}`
   );
   const results = response.data;
   return results;
