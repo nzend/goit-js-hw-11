@@ -3,7 +3,7 @@ import fetchCards from './fetch-cards';
 import { debounce } from 'debounce';
 import Notiflix from 'notiflix';
 
-console.log(fetchCards);
+// console.log(fetchCards);
 const DEBOUNCE_DELAY = 1000;
 
 const refs = {
@@ -15,6 +15,7 @@ const refs = {
 };
 
 let searchImg = '';
+let currentPage = 1;
 // let page = 1;
 
 refs.input.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
@@ -25,8 +26,8 @@ refs.searchBtn.disabled = true;
 
 function onLoadMoreBtn(event) {
   event.preventDefault();
-
-  fetchCards(searchImg).then(response => {
+  currentPage += 1;
+  fetchCards(searchImg, currentPage).then(response => {
     if (response.total === 0) {
       clearData();
       Notiflix.Notify.info(
@@ -48,11 +49,23 @@ function onSearchBtn(event) {
       Notiflix.Notify.info(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+
       refs.loadMoreBtn.classList.toggle('is-visible');
     }
+
     refs.searchBtn.disabled = true;
 
     refs.loadMoreBtn.classList.toggle('is-visible');
+    const total = response.total;
+
+    const totalPages = Math.ceil(response.totalHits / response.hits.length);
+
+    if (response.page >= totalPages) {
+      refs.loadMoreBtn.classList.remove('is-visible');
+    }
+
+    Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
+
     cardsMurkup(response);
   });
 }
@@ -61,6 +74,7 @@ function onInputChange() {
   searchImg = refs.input.value.trim();
   if (searchImg === '') {
     refs.loadMoreBtn.classList.remove('is-visible');
+    currentPage = 1;
 
     clearData();
     refs.searchBtn.disabled = true;
@@ -71,7 +85,7 @@ function onInputChange() {
   refs.searchBtn.disabled = false;
 }
 
-function cardsMurkup({ hits, total }) {
+function cardsMurkup({ hits }) {
   const cards = hits
     .map(
       card =>

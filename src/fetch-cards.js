@@ -7,11 +7,10 @@ const options = {
   safesearch: 'true',
   order: 'popular',
   page: 1,
-  per_page: '4',
+  per_page: '40',
 };
 
-export default async function fetchCards(searchImg) {
-  options.page += 1;
+export default async function fetchCards(searchImg, currentPage) {
   const {
     baseUrl,
     key,
@@ -24,7 +23,7 @@ export default async function fetchCards(searchImg) {
   } = options;
 
   const response = await axios.get(
-    `${baseUrl}?key=${key}&q=${searchImg}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${page}&per_page=${per_page}`
+    `${baseUrl}?key=${key}&q=${searchImg}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${currentPage}&per_page=${per_page}`
   );
   const results = response.data;
   return results;
